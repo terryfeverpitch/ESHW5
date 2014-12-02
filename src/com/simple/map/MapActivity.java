@@ -6,11 +6,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class MapActivity extends Activity {
 	private MapView map_mv_map;
 	private Button map_btn_search;
+	private Button map_btn_gotoschool;
 	
 	public static ProgressDialog progressdialog;
 	@Override
@@ -28,14 +30,26 @@ public class MapActivity extends Activity {
 			@Override
 			public void onClick(View v) {
 				if(map_mv_map.isReady())
-					map_mv_map.gotoMap();
+					map_mv_map.goSearch();
 			}
 		});
-		// LatLng(25.074389, 121.661089) -> TTU
-		// 25.073599, 121.661790  -> ¨ý¤@µf
-		//map_mv_map.loadUrl("javascript:initmap('"+ latitude + "','" + longitude+"')");
-//		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-//		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, MapActivity.this);
+		
+		map_btn_gotoschool = (Button) findViewById(R.id.map_btn_gotoschool);
+		map_btn_gotoschool.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				if(map_mv_map.isReady()) {
+					if(map_mv_map.getCurrentPlace() == MapView.HOME_CODE) {
+						map_btn_gotoschool.setText("å®¶");
+						map_mv_map.gotoPlace(MapView.SCHOOL_CODE);
+					}
+					else if(map_mv_map.getCurrentPlace() == MapView.SCHOOL_CODE) {
+						map_btn_gotoschool.setText("å­¸æ ¡");
+						map_mv_map.gotoPlace(MapView.HOME_CODE);
+					}
+				}	
+			}
+		});
 	}
 
 	@Override
@@ -44,19 +58,6 @@ public class MapActivity extends Activity {
 		getMenuInflater().inflate(R.menu.map, menu);
 		return true;
 	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings) {
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
-	}
-	
 /*	// for GPS update
 	@Override
 	public void onLocationChanged(Location location) {

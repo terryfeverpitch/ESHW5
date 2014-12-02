@@ -8,6 +8,11 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class MapView extends WebView {
+	public final static int HOME_CODE = 0;
+	public final static int SCHOOL_CODE = 1;
+	
+	private int currentPlaceCode = HOME_CODE;
+	
 	private String MAP_URL = "file:///android_asset/map.html";
 	private boolean loaded = false;
 	private WebViewClient client = new WebViewClient() {
@@ -40,13 +45,28 @@ public class MapView extends WebView {
 	
 	public void initMap() {
 		// 25.074378, 121.661085 = home
-		// 25.073260, 121.663002 = 八方雲集
-		loadUrl("javascript:initMap(25.074378, 121.661085)");
+		// 25.066884, 121.522144 = school
+		loadUrl("javascript:initialize(25.074378, 121.661085)");
 	}
 	
-	public void gotoMap() {
-		String str = "221新北市汐止區建成路160巷8號";
-		loadUrl("javascript:goto('"+ str + "')");
+	public void goSearch() {
+		MapActivity.progressdialog.setTitle("Loading");
+		MapActivity.progressdialog.setMessage("searching for food...");
+		MapActivity.progressdialog.show();
+		loadUrl("javascript:searchFood()");
+//		MapActivity.progressdialog.dismiss();
+	}
+	
+	public void gotoPlace(int where) {
+		currentPlaceCode = where;
+		if(where == HOME_CODE)
+			loadUrl("javascript:initialize(25.074378, 121.661085)");
+		else if(where == SCHOOL_CODE)
+			loadUrl("javascript:initialize(25.066884, 121.522144)");
+	}
+	
+	public int getCurrentPlace() {
+		return currentPlaceCode;
 	}
 
 	public boolean isReady() {

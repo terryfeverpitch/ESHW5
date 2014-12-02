@@ -1,132 +1,87 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8">
-        <link rel="stylesheet" type="text/css" href="style.css" />
-		<title>Insert title here</title>
-		<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=true"></script>
-        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=true_or_false"></script>
-        <script type="text/javascript">
-            var geocoder;
+    <head>
+        <title>Place searches</title>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <meta charset="utf-8">
+        <style>
+            html, body, #map-canvas {
+                height: 100%;
+                margin: 0px;
+                padding: 0px
+            } 
+        </style>
+        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+        <script>
             var map;
-            var markerInfo = [];
-            var marker = [];
-            var service;
-            var contentString = "This is my home.";  
-
-            function initMap(lat, log) {
-                var mapCenter = new google.maps.LatLng(lat, log);
-                geocoder = new google.maps.Geocoder();
-       
-                var mapOptions = {
-                	zoom: 15,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP,
-                    center: mapCenter,
-                    position: mapCenter
-                };
-                map = new google.maps.Map(document.getElementById("map_canvas"), mapOptions); 
-
+            var infowindow;
+            var homeLocation;
+            
+            function initialize(lat, lng) {
+            	homeLocation = new google.maps.LatLng(lat, lng);
+                map = new google.maps.Map(document.getElementById('map-canvas'), {
+                    center: homeLocation,
+                    zoom: 15
+                });
+                
                 var homeMarker = new google.maps.Marker({
-                    position: mapCenter, 
-                    map: map 
+                    map: map,
+                    position: homeLocation
+                });
+                
+                var homeInfo = new google.maps.InfoWindow({
+                    content: "This is my home."
                 });
 
-                google.maps.event.addListener(homeMarker, 'click', function() {      
-                    var infowindow = new google.maps.InfoWindow({
-                        content: contentString
-                    });
-
-                    if (homeMarker.getAnimation() != null) {
-                        homeMarker.setAnimation(null);
-                    } 
-                    else {
-                        infowindow.open(map,homeMarker);
-                        homeMarker.setAnimation(google.maps.Animation.BOUNCE);
-                    }
+                google.maps.event.addListener(homeMarker, 'click', function() {
+                	homeInfo.open(map, this);
                 });
-
+ 				/*
                 var request = {
-                    location: mapCenter,
-                    radius: '500',
-                    query: ['food']
+                    location: homeLocation,
+                    radius: 500,
+                    types: ['food']
                 };
-                
-                service = new google.maps.places.PlacesService(map);
-                service.textSearch(request, function(results, status) {
-                    if (status == google.maps.places.PlacesServiceStatus.OK) {
-                        for (var i = 0; i < 1; i++) {
-                            // var place = results[0];
-                            markerInfo[i] = results[i];
-                            marker[i] = new google.maps.Marker({
-                                map: map,
-                                position: markerInfo[i].geometry.location
-                            }); 
-                        }
-                        
-                    }
-
-                    contentString += " m = "
-                    contentString += markerInfo.geometry.location;
-
-                    var i = 0;
-                    google.maps.event.addListener(marker, 'click', function() {
-                        var string = "This is my 越南美食.";              
-                              
-                        var info = new google.maps.InfoWindow({
-                            content: string
-                        });
-
-                        if (marker[i].getAnimation() != null) {
-                            marker[i].setAnimation(null);
-                        } 
-                        else {
-                            info.open(map, marker[i]);
-                            marker[i].setAnimation(google.maps.Animation.BOUNCE);
-                        }
-                    });
-                });
-
-                
-                //service.getDetails(request, callback);
-            }
-
-/*
-            function goto(address) {
-                geocoder.geocode({"address": address }, function(results, status) {      
-                    if(status == google.maps.GeocoderStatus.OK) {    
-                    	for (var i = 0; i < results.length; i++) {
-                    	      createMarker(results[i]);
-                    	      map.setCenter(results[i].geometry.location); 
-                    	}
-                    }
-                });  
+                infowindow = new google.maps.InfoWindow();
+                var service = new google.maps.places.PlacesService(map);
+                service.nearbySearch(request, callback);
+                */
             }
             
+            function searchFood() {
+            	var request = {
+                    location: homeLocation,
+                    radius: 500,
+                    types: ['food', 'restaurant']
+                };
+                infowindow = new google.maps.InfoWindow();
+                var service = new google.maps.places.PlacesService(map);
+                service.nearbySearch(request, callback);
+            }
+
+            function callback(results, status) {
+                if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    for (var i = 0; i < results.length; i++) {
+                        createMarker(results[i]);
+                    }
+                }
+            }
+
             function createMarker(place) {
-            	var placeLoc = place.geometry.location;
-            	var marker = new google.maps.Marker({
-            		map: map,
-            		position: place.geometry.location
-            	});
+                var placeLoc = place.geometry.location;
+                var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location
+                });
 
                 google.maps.event.addListener(marker, 'click', function() {
-                    if (marker.getAnimation() != null) {
-                        marker.setAnimation(null);
-                    } 
-                    else {
-                        marker.setAnimation(google.maps.Animation.BOUNCE);
-                    }
+                    infowindow.setContent(place.name);
+                    infowindow.open(map, this);
                 });
-                // markers.push(marker);
-           	}
-*/
-            function callback() {
-                
-            }          
+            }
         </script>
-	</head>
-	
-	<body>
-        <div id="map_canvas">map canvas</div>
-    </body>
+    </head>
+    <body>
+        <div id="map-canvas"></div>
+    </body>   
 </html>
