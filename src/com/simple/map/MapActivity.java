@@ -32,7 +32,7 @@ public class MapActivity extends Activity {
 			}
 		});
 		// LatLng(25.074389, 121.661089) -> TTU
-		
+		// 25.073599, 121.661790  -> ¨ý¤@µf
 		//map_mv_map.loadUrl("javascript:initmap('"+ latitude + "','" + longitude+"')");
 //		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 //		locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 1000, 0, MapActivity.this);

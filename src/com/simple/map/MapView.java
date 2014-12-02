@@ -45,7 +45,7 @@ public class MapView extends WebView {
 	}
 	
 	public void gotoMap() {
-		String str = "樂凡手感烘焙";
+		String str = "221新北市汐止區建成路160巷8號";
 		loadUrl("javascript:goto('"+ str + "')");
 	}
 
